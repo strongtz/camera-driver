@@ -1,7 +1,7 @@
 KBUILD_OPTIONS += CAMERA_KERNEL_ROOT=$(shell pwd)
-KBUILD_OPTIONS += KERNEL_ROOT=$(ROOT_DIR)/$(KERNEL_DIR)
+KBUILD_OPTIONS += KERNEL_ROOT=$(KERNEL_ROOT)
 KBUILD_OPTIONS += INSTALL_MOD_DIR=camera
-SUPPORTED_ARCH = qcm6490 qcs9100 qcs615
+SUPPORTED_ARCH = qcm6490
 
 .PHONY: clean all
 
@@ -23,17 +23,17 @@ modules: cam_generated_h
 modules_install:
 	@$(foreach arch, $(SUPPORTED_ARCH), \
 		echo "Target: $(arch)"; \
-		$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
-		$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules_install $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
+		$(MAKE) -C $(KERNEL_ROOT) M=$(SRC) modules $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
+		$(MAKE) -C $(KERNEL_ROOT) M=$(SRC) modules_install $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
 	)
 headers_install:
 	echo "Processing target $@"
-	KERNEL_SCRIPT=$(KERNEL_SRC) IN_DIR=camera/include/uapi/camera/media/ OUT_DIR=sanitized_headers/camera/media bash scripts/sanitize_uapi.sh
-	KERNEL_SCRIPT=$(KERNEL_SRC) IN_DIR=camera_kt/include/uapi/camera/media/ OUT_DIR=sanitized_headers/camera_kt/media bash scripts/sanitize_uapi.sh
+	KERNEL_SCRIPT=$(KERNEL_ROOT) IN_DIR=camera/include/uapi/camera/media/ OUT_DIR=sanitized_headers/camera/media bash scripts/sanitize_uapi.sh
+	KERNEL_SCRIPT=$(KERNEL_ROOT) IN_DIR=camera_kt/include/uapi/camera/media/ OUT_DIR=sanitized_headers/camera_kt/media bash scripts/sanitize_uapi.sh
 
 %:
 	echo "Processing glob target $@"
 	@$(foreach arch, $(SUPPORTED_ARCH), \
 		echo "Target: $(arch)"; \
-		$(MAKE) -C $(KERNEL_SRC) M=$(SRC) modules $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
+		$(MAKE) -C $(KERNEL_ROOT) M=$(SRC) modules $(KBUILD_OPTIONS) CAMERA_ARCH=$(arch); \
 	)
